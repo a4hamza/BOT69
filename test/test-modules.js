@@ -29,7 +29,7 @@ async function runTests() {
   assert(commandHandler.getCommand('add') !== null, 'Command .add should exist');
   console.log('  ✅ Command Handler: Active commands loaded; other games (pubg, coc, genshin, hok) confirmed removed.');
 
-  // Test 2: Mobile Legends Checker (Accurate Nickname & Country Flag)
+  // Test 2: Mobile Legends Checker (Accurate Nickname, Country Flag, Special Bundles & First Recharge Bonus)
   console.log('\n▶ Test 2: Verifying Mobile Legends (.ml) Checker...');
   const mlRes = await checkMobileLegends('1114917746', '13486');
   assert(mlRes.includes('Mobile Legends') || mlRes.includes('MOBILE LEGENDS'), 'ML output should mention Mobile Legends');
@@ -37,7 +37,16 @@ async function runTests() {
   assert(mlRes.includes('13486'), 'ML output should contain Zone/Server');
   assert(mlRes.includes('🇮🇩 Indonesia'), 'ML output should contain country flag and name');
   assert(mlRes.includes('Outrageous Dominance'), 'ML output should contain in-game nickname');
-  console.log('  ✅ Mobile Legends output verified with accurate player information & professional layout.');
+  assert(mlRes.includes('SPECIAL BUNDLES'), 'ML output should contain SPECIAL BUNDLES');
+  assert(mlRes.includes('Elite Bundle (Weekly)'), 'ML output should contain Elite Bundle (Weekly)');
+  assert(mlRes.includes('Epic Bundle (Monthly)'), 'ML output should contain Epic Bundle (Monthly)');
+  assert(mlRes.includes('FIRST RECHARGE BONUS'), 'ML output should contain FIRST RECHARGE BONUS');
+  assert(mlRes.includes('50 + 50 Diamonds'), 'ML output should contain 50 + 50 Diamonds');
+  assert(mlRes.includes('150 + 150 Diamonds'), 'ML output should contain 150 + 150 Diamonds');
+  assert(mlRes.includes('250 + 250 Diamonds'), 'ML output should contain 250 + 250 Diamonds');
+  assert(mlRes.includes('500 + 500 Diamonds'), 'ML output should contain 500 + 500 Diamonds');
+  assert(mlRes.includes('Checked') && mlRes.includes('UTC'), 'ML output should contain live UTC Checked timestamp');
+  console.log('  ✅ Mobile Legends output verified with accurate player information, bundles, and recharge bonuses.');
 
   // Test 3: PUBG Mobile Complete Removal
   console.log('\n▶ Test 3: Verifying PUBG Mobile (.pubg) Complete Removal...');
