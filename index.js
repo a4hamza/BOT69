@@ -226,6 +226,7 @@ const server = app.listen(config.port, () => {
       }, 2500);
     }
   }).catch(err => {
+    console.error('[Baileys Startup Error]:', err.message);
     console.log('[Baileys Startup Note] Waiting for pairing code request from web portal.');
   });
 
