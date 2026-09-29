@@ -7,6 +7,7 @@ window.setPhonePrefix = function(prefix) {
   phoneInput.value = prefix;
   phoneInput.focus();
 };
+window.setPrefix = window.setPhonePrefix;
 
 document.addEventListener('DOMContentLoaded', () => {
   // Elements
