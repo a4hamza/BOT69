@@ -5,6 +5,7 @@
   "main": "index.js",
   "type": "commonjs",
   "scripts": {
+    "prestart": "npm install --omit=dev --no-audit --no-fund",
     "start": "node index.js",
     "test": "node test/test-modules.js"
   },

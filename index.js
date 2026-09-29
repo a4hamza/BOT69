@@ -34,6 +34,9 @@ process.on('unhandledRejection', (reason) => {
 });
 
 // ── HYEHOST / Container Auto-Dependency Check ──
+const fs = require('fs');
+const path = require('path');
+
 try {
   require.resolve('express');
   require.resolve('long');
@@ -41,12 +44,27 @@ try {
   console.log('\n📦 [HYEHOST Auto-Installer] Dependencies missing in container! Running npm install...');
   const { execSync } = require('child_process');
   try {
-    execSync('npm install --omit=dev --no-audit --no-fund', { stdio: 'inherit', cwd: __dirname });
+    execSync('npm install --no-audit --no-fund', { stdio: 'inherit', cwd: __dirname });
     console.log('✅ [HYEHOST Auto-Installer] All packages installed successfully!\n');
   } catch (installErr) {
     console.error('❌ [HYEHOST Auto-Installer] Auto-install failed:', installErr.message);
   }
 }
+
+// ── Ensure 'long' package is mirrored inside @whiskeysockets/baileys/node_modules for ESM resolution ──
+try {
+  const rootLong = path.join(__dirname, 'node_modules', 'long');
+  const baileysDir = path.join(__dirname, 'node_modules', '@whiskeysockets', 'baileys');
+  const baileysNodeModules = path.join(baileysDir, 'node_modules');
+  const baileysLong = path.join(baileysNodeModules, 'long');
+
+  if (fs.existsSync(rootLong) && fs.existsSync(baileysDir) && !fs.existsSync(baileysLong)) {
+    if (!fs.existsSync(baileysNodeModules)) fs.mkdirSync(baileysNodeModules, { recursive: true });
+    if (typeof fs.cpSync === 'function') {
+      fs.cpSync(rootLong, baileysLong, { recursive: true });
+    }
+  }
+} catch (e) {}
 
 const express = require('express');
 const cors = require('cors');
