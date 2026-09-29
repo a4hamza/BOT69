@@ -10,4 +10,7 @@ group_settings.json
 tts_state.json
 .dedup_cache.json
 *.zip
+.session_creds.json
+.bot69_auth_backup.json
+.baileys_auth/
 

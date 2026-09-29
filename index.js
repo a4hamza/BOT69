@@ -204,6 +204,25 @@ app.post('/api/test-game', async (req, res) => {
   }
 });
 
+// 5. Get Session Backup Data (for permanent cloud persistence across container reinstalls)
+app.get('/api/session-backup', (req, res) => {
+  try {
+    const sessionData = waClient.getSessionData();
+    const isConnected = !!(waClient.sock?.authState?.creds?.registered);
+    res.json({
+      success: true,
+      connected: isConnected,
+      hasBackup: !!sessionData,
+      sessionData: sessionData || null,
+      message: sessionData
+        ? 'Session backup available. Optional: set this as SESSION_DATA environment variable in Deplexo to guarantee 100% permanence even if disk is completely wiped.'
+        : 'No session backup available yet. Connect your bot first.'
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 // Start Express Server
 const server = app.listen(config.port, () => {
   console.log(`\n======================================================`);
