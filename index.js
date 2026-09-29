@@ -36,6 +36,7 @@ process.on('unhandledRejection', (reason) => {
 // ── HYEHOST / Container Auto-Dependency Check ──
 try {
   require.resolve('express');
+  require.resolve('long');
 } catch (depErr) {
   console.log('\n📦 [HYEHOST Auto-Installer] Dependencies missing in container! Running npm install...');
   const { execSync } = require('child_process');
