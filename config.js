@@ -14,8 +14,8 @@ module.exports = {
   prefixes: ['.', ',', '!', '#', '/'], // Supported prefixes: .menu, ,menu, !menu, #menu, /menu
   sessionDir: './auth_info_baileys',
 
-  // Web Dashboard Settings (HYEHOST / Container compatibility)
-  port: process.env.PORT || 8080,
+  // Web Dashboard Settings (HYEHOST / Pterodactyl / Silly Development compatibility)
+  port: process.env.PORT || process.env.SERVER_PORT || 8080,
 
   // Group Moderation & Anti-Spam Thresholds
   antiSpam: {
