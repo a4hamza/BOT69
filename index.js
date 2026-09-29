@@ -1,0 +1,192 @@
+/**
+ * BOT69 (Identity: VIRUS) WhatsApp Bot & Web Pairing Server
+ * Multi-Device WhatsApp Bot with MLBB Account Checker, Urdu/Anime TTS,
+ * Auto-Kick Spam Moderation, Stealth Anti-Delete & View-Once, and Web Portal.
+ * Owner: BOT 69
+ */
+
+process.on('uncaughtException', (err) => {
+  const msg = err?.message || String(err);
+  if (
+    msg.includes('MessageCounterError') ||
+    msg.includes('Session error') ||
+    msg.includes('Key used already or never filled') ||
+    msg.includes('Bad MAC') ||
+    msg.includes('No matching sessions found')
+  ) {
+    return;
+  }
+  console.log('[System Handled Exception]:', msg);
+});
+
+process.on('unhandledRejection', (reason) => {
+  const msg = reason?.message || String(reason);
+  if (
+    msg.includes('MessageCounterError') ||
+    msg.includes('Session error') ||
+    msg.includes('Key used already or never filled') ||
+    msg.includes('Bad MAC') ||
+    msg.includes('No matching sessions found')
+  ) {
+    return;
+  }
+  console.log('[System Handled Rejection]:', msg);
+});
+
+// ── HYEHOST / Container Auto-Dependency Check ──
+try {
+  require.resolve('express');
+} catch (depErr) {
+  console.log('\n📦 [HYEHOST Auto-Installer] Dependencies missing in container! Running npm install...');
+  const { execSync } = require('child_process');
+  try {
+    execSync('npm install --omit=dev --no-audit --no-fund', { stdio: 'inherit', cwd: __dirname });
+    console.log('✅ [HYEHOST Auto-Installer] All packages installed successfully!\n');
+  } catch (installErr) {
+    console.error('❌ [HYEHOST Auto-Installer] Auto-install failed:', installErr.message);
+  }
+}
+
+const express = require('express');
+const cors = require('cors');
+const path = require('path');
+const axios = require('axios');
+const config = require('./config');
+const waClient = require('./lib/baileys');
+const { checkMobileLegends } = require('./lib/gameChecker');
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
+
+// ── 24/7 Keep-Alive Engine ──
+let keepAliveTimer = null;
+let detectedPublicUrl = process.env.APP_URL || null;
+
+function startKeepAlive(url) {
+  if (keepAliveTimer || !url) return;
+  detectedPublicUrl = url.replace(/\/+$/, '');
+  console.log(`[KeepAlive] 🟢 Starting 24/7 self-ping loop for: ${detectedPublicUrl}`);
+
+  keepAliveTimer = setInterval(async () => {
+    try {
+      const pingUrl = `${detectedPublicUrl}/api/status`;
+      await axios.get(pingUrl, { timeout: 5000 });
+      console.log(`[KeepAlive] ✅ Ping successful (${new Date().toLocaleTimeString()})`);
+    } catch (err) {
+      // Non-blocking log
+    }
+  }, 300000);
+}
+
+if (process.env.ENABLE_KEEP_ALIVE === 'true' && process.env.APP_URL) {
+  startKeepAlive(process.env.APP_URL);
+}
+
+// 1. Connection Status API
+app.get('/api/status', (req, res) => {
+  res.json({
+    status: waClient.status,
+    pairingCode: waClient.pairingCode,
+    hasQr: !!waClient.qrCodeBase64,
+    user: waClient.connectedUser ? {
+      name: waClient.connectedUser.name || 'VIRUS Bot',
+      id: waClient.connectedUser.id?.split(':')[0],
+    } : null,
+    botName: config.botName,
+    ownerName: config.ownerName,
+    prefix: config.prefix,
+  });
+});
+
+// 2. Request WhatsApp Pairing Code
+app.post('/api/pair', async (req, res) => {
+  const { phoneNumber } = req.body;
+  if (!phoneNumber) {
+    return res.status(400).json({ success: false, message: 'Phone number is required.' });
+  }
+
+  const cleanNumber = phoneNumber.replace(/[^0-9]/g, '');
+  if (cleanNumber.length < 9) {
+    return res.status(400).json({ success: false, message: 'Invalid phone number length. Include country code.' });
+  }
+
+  try {
+    console.log(`[Web API] Generating pairing code for +${cleanNumber}...`);
+    const code = await waClient.requestNewPairingCode(cleanNumber);
+    if (code) {
+      res.json({ success: true, pairingCode: code });
+    } else {
+      res.status(500).json({ success: false, message: 'Failed to generate code in time. Please retry.' });
+    }
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// 3. Get QR Code data
+app.get('/api/qr', (req, res) => {
+  if (waClient.qrCodeBase64) {
+    res.json({ success: true, qr: waClient.qrCodeBase64 });
+  } else {
+    res.json({ success: false, message: 'No QR code currently active.' });
+  }
+});
+
+// 4. Test Game Account Checker directly from web page
+app.post('/api/test-game', async (req, res) => {
+  const { game, query } = req.body;
+  if (!game || !query) {
+    return res.status(400).json({ success: false, message: 'Game type and query ID are required.' });
+  }
+
+  try {
+    let result = '';
+    const cleanQuery = query.trim();
+
+    const g = game.toLowerCase();
+    if (g === 'ml' || g === 'mlbb' || g === 'mobilelegends') {
+      const parts = cleanQuery.split(/\s+/);
+      result = await checkMobileLegends(parts[0], parts[1]);
+    } else {
+      return res.status(400).json({ success: false, message: 'Only Mobile Legends (.ml) is supported.' });
+    }
+
+    res.json({ success: true, formattedText: result });
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message });
+  }
+});
+
+// Start Express Server
+const server = app.listen(config.port, () => {
+  console.log(`\n======================================================`);
+  console.log(`🚀 BOT 69 • VIRUS WHATSAPP BOT DASHBOARD`);
+  console.log(`🌐 HYEHOST Server running on Port: ${config.port}`);
+  console.log(`🌐 Dashboard URL: http://localhost:${config.port}`);
+  console.log(`👉 Open the Webpage in your browser to link WhatsApp!`);
+  console.log(`======================================================\n`);
+  
+  // Start Baileys in background
+  waClient.start().then(() => {
+    const targetNumber = process.env.PAIR_NUMBER || process.env.PHONE_NUMBER;
+    if (targetNumber && !waClient.sock?.authState?.creds?.registered) {
+      const clean = targetNumber.replace(/[^0-9]/g, '');
+      console.log(`[Auto-Pair] Requesting pairing code for +${clean}...`);
+      setTimeout(() => {
+        waClient.requestNewPairingCode(clean).catch(err => {
+          console.error('[Auto-Pair Error]:', err.message);
+        });
+      }, 2500);
+    }
+  }).catch(err => {
+    console.log('[Baileys Startup Note] Waiting for pairing code request from web portal.');
+  });
+
+  if (process.env.APP_URL) {
+    startKeepAlive(process.env.APP_URL);
+  }
+});
+
+module.exports = { app, server };

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Link WhatsApp • VIRUS Bot</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="background-glow"></div>
+
+  <div class="wrapper">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo-wrap">
+        <span class="logo-emoji">⚡</span>
+        <div>
+          <h1>VIRUS BOT</h1>
+          <p class="subtitle">WhatsApp Multi-Device Link Portal</p>
+        </div>
+      </div>
+      <div id="statusBadge" class="status-pill disconnected">
+        <span class="status-dot"></span>
+        <span id="statusText">Disconnected</span>
+      </div>
+    </header>
+
+    <!-- Main Card -->
+    <main class="main-card">
+      <div class="card-top">
+        <div class="icon-circle">📲</div>
+        <h2>Link Bot to Your WhatsApp</h2>
+        <p class="desc">Enter your WhatsApp phone number below to get an 8-character pairing code. Once linked, the bot will run directly inside WhatsApp!</p>
+      </div>
+
+      <!-- Phone Form -->
+      <form id="pairForm" class="phone-form">
+        <label for="phoneInput" class="input-label">Your WhatsApp Phone Number (with Country Code)</label>
+        <div class="input-box">
+          <span class="prefix-symbol">📞 +</span>
+          <input 
+            type="text" 
+            id="phoneInput" 
+            placeholder="e.g. 923001234567 or 15551234567" 
+            required 
+            autocomplete="off"
+            autofocus
+          >
+          <button type="submit" id="getPairBtn" class="btn-submit">
+            <span id="btnSpinner" class="spinner hidden"></span>
+            <span id="btnText">Get Code</span>
+          </button>
+        </div>
+
+        <div class="country-hints">
+          <span>Quick prefix:</span>
+          <button type="button" class="hint-btn" onclick="setPrefix('92')">🇵🇰 +92</button>
+          <button type="button" class="hint-btn" onclick="setPrefix('1')">🇺🇸 +1</button>
+          <button type="button" class="hint-btn" onclick="setPrefix('62')">🇮🇩 +62</button>
+          <button type="button" class="hint-btn" onclick="setPrefix('91')">🇮🇳 +91</button>
+          <button type="button" class="hint-btn" onclick="setPrefix('44')">🇬🇧 +44</button>
+          <button type="button" class="hint-btn" onclick="setPrefix('966')">🇸🇦 +966</button>
+        </div>
+      </form>
+
+      <div id="inlineError" class="error-msg hidden"></div>
+
+      <!-- Pairing Code Display Area -->
+      <div id="codeDisplayArea" class="code-container hidden">
+        <div class="code-header">
+          <span>YOUR 8-CHARACTER PAIRING CODE</span>
+          <span class="pulse-tag">Active</span>
+        </div>
+
+        <div class="code-value-box">
+          <div id="pairingCodeVal" class="code-digits">---- - ----</div>
+          <button id="copyCodeBtn" class="copy-button" type="button">
+            📋 Copy Code
+          </button>
+        </div>
+        <div id="copyNotice" class="copy-success hidden">✓ Code copied to clipboard!</div>
+
+        <!-- Instructions -->
+        <div class="instructions-card">
+          <h3>📱 How to enter this code on your phone:</h3>
+          <ol>
+            <li>Open <b>WhatsApp</b> on your phone.</li>
+            <li>Tap <b>Settings</b> (or the <b>3 dots menu</b> on top right).</li>
+            <li>Select <b>Linked Devices</b> &gt; <b>Link a device</b>.</li>
+            <li>At the bottom of the screen, tap <b>"Link with phone number instead"</b>.</li>
+            <li>Type in the 8-character pairing code shown above.</li>
+          </ol>
+        </div>
+      </div>
+
+      <!-- Connected Area -->
+      <div id="connectedArea" class="connected-banner hidden">
+        <div class="check-circle">✓</div>
+        <div class="connected-info">
+          <h3>Bot Successfully Linked & Connected!</h3>
+          <p>The bot is now running directly inside your WhatsApp account (<b id="connectedNumber">+...</b>).</p>
+          <div class="whatsapp-commands-hint">
+            <p><b>Now open WhatsApp and send any command in personal chat or group chat:</b></p>
+            <ul>
+              <li><code>.ml 1114917746 13486</code> - Mobile Legends Account Checker</li>
+              <li><code>.ben10 It's hero time!</code> - Ben Tennyson Classic Hero Voice TTS</li>
+              <li><code>.sara salam kesi ho</code> - Sara Pakistani Urdu Voice TTS</li>
+              <li><code>.goku hello friend</code> - Goku Anime Voice TTS</li>
+              <li><code>.menu</code> - Full WhatsApp command list</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>VIRUS WhatsApp Bot • All commands, game checks, and group moderation work directly on WhatsApp.</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
