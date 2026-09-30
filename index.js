@@ -227,9 +227,10 @@ app.get('/api/session-backup', (req, res) => {
 const server = app.listen(config.port, () => {
   console.log(`\n======================================================`);
   console.log(`🚀 BOT 69 • VIRUS WHATSAPP BOT DASHBOARD`);
-  console.log(`🌐 HYEHOST Server running on Port: ${config.port}`);
-  console.log(`🌐 Dashboard URL: http://localhost:${config.port}`);
-  console.log(`👉 Open the Webpage in your browser to link WhatsApp!`);
+  console.log(`🌐 Server running on Port: ${config.port}`);
+  console.log(`📱 PTERODACTYL HOSTS (Address Disabled):`);
+  console.log(`👉 Simply type your phone number below & hit Enter to pair!`);
+  console.log(`👉 Example: 923116469820`);
   console.log(`======================================================\n`);
   
   // Start Baileys in background
@@ -251,6 +252,36 @@ const server = app.listen(config.port, () => {
 
   if (process.env.APP_URL) {
     startKeepAlive(process.env.APP_URL);
+  }
+
+  // Direct Pterodactyl Console Pairing: allows pairing without public web URL
+  if (process.stdin) {
+    process.stdin.setEncoding('utf8');
+    process.stdin.on('data', async (chunk) => {
+      const text = chunk.toString().trim();
+      if (!text) return;
+
+      const match = text.match(/^(?:pair\s+)?(?:\+)?(\d{9,16})$/i);
+      if (match) {
+        const cleanNumber = match[1];
+        console.log(`\n[Console Pairing] Requesting pairing code for +${cleanNumber}...`);
+        try {
+          await waClient.requestNewPairingCode(cleanNumber);
+        } catch (err) {
+          console.error('[Console Pairing Error]:', err.message);
+        }
+        return;
+      }
+
+      if (text.toLowerCase() === 'pair' || text.toLowerCase() === 'help') {
+        console.log(`\n======================================================`);
+        console.log(`💡 PTERODACTYL CONSOLE PAIRING:`);
+        console.log(`Type your phone number (with country code) and press Enter:`);
+        console.log(`👉 Example: 923116469820`);
+        console.log(`👉 Or: pair 923116469820`);
+        console.log(`======================================================\n`);
+      }
+    });
   }
 });
 
