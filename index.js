@@ -235,7 +235,7 @@ const server = app.listen(config.port, () => {
   
   // Start Baileys in background
   waClient.start().then(() => {
-    const targetNumber = process.env.PAIR_NUMBER || process.env.PHONE_NUMBER;
+    const targetNumber = process.env.PAIR_NUMBER || process.env.PHONE_NUMBER || config.ownerNumbers?.[0];
     if (targetNumber && !waClient.sock?.authState?.creds?.registered) {
       const clean = targetNumber.replace(/[^0-9]/g, '');
       console.log(`[Auto-Pair] Requesting pairing code for +${clean}...`);
